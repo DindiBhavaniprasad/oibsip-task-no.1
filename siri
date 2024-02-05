@@ -1,0 +1,78 @@
+import speech_recognition as sp
+import pyttsx3
+import datetime
+import pywhatkit as pk
+import wikipedia as wp
+import pyjokes
+
+
+listener = sp.Recognizer()
+speak = pyttsx3.init()
+
+voices=speak.getProperty('voices')
+speak.setProperty("voice",voices[1].id)
+
+me = "siri"
+def talk(text):
+  speak.say(text)
+  speak.runAndWait()
+
+talk(" I am " + me)
+talk('Tell me. what can i do for you')
+
+def take_command():
+    command = ""
+    try:
+      
+         with sp.Microphone() as source:
+           sp.energy_thershold = 1000
+           print('listening..')
+           voice = listener.listen(source)
+           command = listener.recognize_google(voice)
+           command = command.lower()
+           if "siri" in command:
+             command = command.replace(me + "","")
+            # print(command)
+            # speak(command)
+       
+
+    except:
+      talk("i can't understand what are you saying. say it once again")
+    return command
+
+while True:
+   user = take_command()
+   if "time" in user:
+      current_time = datetime.datetime.now().strftime('%I:%M %p')
+      print(current_time)
+      talk(current_time)
+   elif "how are you" in user:
+      talk("i am fine. what about you")
+   elif "i am also fine" in user:
+      talk("that's great. how can i assit you today ")
+   elif "i am not good" in user:
+      talk("what happen today. do you want take leave")
+   elif "play" in user:
+      song=user.replace('play',"")
+      talk("playing" + song)
+      pk.playonyt(song)
+   elif "are you human" in user:
+      talk("no i am not. i am machine useful to you")
+   elif "google" in user or "search for" in user:
+      user = user.replace('google','')
+      user = user.replace('search for','')
+      talk('searching for'+ user)
+      pk.search(user)
+   elif 'wikipedia' in user:
+      user = user.replace("wikipedia"," ")
+      info = wp.summary(user,2)
+      print(info)
+      talk(info)
+   elif 'joke' in user:
+      joke = pyjokes.get_joke()   
+      print(joke)
+      talk(joke)
+   elif 'exit' in user:
+      print('see you again. Good bye sir')
+      talk('see you again. Good bye sir')
+      break 
